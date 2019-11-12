@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-version="v1.2.2"
+version="v2.6.2"
 
 wget -c https://github.com/vitelabs/go-vite/releases/download/${version}/gvite-${version}-linux.tar.gz
 

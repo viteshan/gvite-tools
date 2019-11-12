@@ -11,7 +11,7 @@ function isYes() {
     fi
 }
 
-version="v1.2.2"
+version="v2.6.2"
 
 isYes "Download gvite-${version} "
 
@@ -59,6 +59,9 @@ After=network.target
 ExecStart='$BIN_DIR/gvited'
 Restart=on-failure
 User='`whoami`'
+LimitCORE=infinity
+LimitNOFILE=10240
+LimitNPROC=10240
 
 [Install]
 WantedBy=multi-user.target' | sudo tee /etc/systemd/system/vite.service>/dev/null
