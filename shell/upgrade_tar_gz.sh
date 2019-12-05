@@ -1,7 +1,12 @@
 #!/bin/bash
 set -e
 
-version="v2.6.2"
+version="$1"
+
+if [ -z "$version" ]; then
+    echo "error: upgrade_tar_gz.sh [version]"
+    exit 1
+fi
 
 wget -c https://github.com/vitelabs/go-vite/releases/download/${version}/gvite-${version}-linux.tar.gz
 
