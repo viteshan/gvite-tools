@@ -2,11 +2,8 @@
 # install_tar_gz.sh
 
 ```
-# edit upgrade_tar_gz.sh, and update the version
-vim install_tar_gz.sh
-
 # download tar.gz file, and install to usr/local/vite
-./install_tar_gz.sh
+./install_tar_gz.sh v2.8.0
 
 # check vite status
 sudo service vite status
@@ -25,10 +22,7 @@ sudo systemctl enable vite
 
 this script is for installing by `install.sh`.
 ```
-# edit upgrade_tar_gz.sh, and update the version
-vim upgrade_tar_gz.sh 
-
 # upgrade the binary file[/usr/local/vite/gvite].
-./upgrade_tar_gz.sh
+./upgrade_tar_gz.sh v2.8.0
 
 ```
