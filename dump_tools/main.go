@@ -15,8 +15,11 @@ import (
 
 var defaultHost = "http://127.0.0.1:48132"
 var defaultAddress = "vite_0000000000000000000000000000000000000000a4f3a0cb58"
+var defaultTokenId = "all"
+
 var address = flag.String("address", defaultAddress, "account address")
 var startHeight = flag.Uint64("start", 1, "start height")
+var tokenId = flag.String("tokenId", defaultTokenId, "tokenId")
 var endHeight = flag.Uint64("end", 1, "end height")
 var host = flag.String("host", defaultHost, "full node http rpc host")
 
@@ -27,8 +30,14 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	err = printAccBlocks(rpc, types.HexToAddressPanic(*address), *startHeight, *endHeight, func(block *api.AccountBlock) (b bool, b2 bool) {
-		return true, true
+	err = printAccBlocks(rpc, types.HexToAddressPanic(*address), *startHeight, *endHeight, func(block *api.AccountBlock) bool {
+		if *tokenId == defaultTokenId {
+			return true
+		}
+		if block.TokenInfo == nil {
+			return false
+		}
+		return block.TokenInfo.TokenId.String() == *tokenId
 	})
 
 	if err != nil {
@@ -37,7 +46,7 @@ func main() {
 	fmt.Println()
 }
 
-type Matcher func(block *api.AccountBlock) (bool, bool)
+type Matcher func(block *api.AccountBlock) bool
 
 func printAccBlocks(rpc client.RpcClient, address types.Address, start uint64, end uint64, matcherFunc Matcher) error {
 	if start > end {
@@ -54,24 +63,27 @@ func printAccBlocks(rpc client.RpcClient, address types.Address, start uint64, e
 			return err
 		}
 		for _, block := range blocks {
-			if ledger.IsSendBlock(block.BlockType) {
-				fmt.Printf("[S]%s,%s,%s,%s,%d,%s,%d,%s\n",
-					block.Height, block.Address, block.ToAddress,
-					block.TokenInfo.TokenSymbol, block.TokenInfo.Decimals,
-					*block.Amount, block.Timestamp,
-					time.Unix(block.Timestamp, 0).String())
-			} else if block.BlockType == ledger.BlockTypeReceive {
-				fmt.Printf("[R]%s,%s,%s,%s,%d,%s,%d,%s\n",
-					block.Height, block.FromAddress, block.Address,
-					block.TokenInfo.TokenSymbol, block.TokenInfo.Decimals,
-					*block.Amount, block.Timestamp,
-					time.Unix(block.Timestamp, 0).String())
-			}
 			heightUint64, err := strconv.ParseUint(block.Height, 10, 64)
 			if err != nil {
 				return err
 			}
 			index = heightUint64
+			if !matcherFunc(block) {
+				continue
+			}
+			if ledger.IsSendBlock(block.BlockType) {
+				fmt.Printf("[S]%s,%s,%s,%s,%s,%d,%s,%d,%s\n",
+					block.Height, block.Address, block.ToAddress,
+					block.TokenInfo.TokenSymbol, block.TokenInfo.TokenId.String(), block.TokenInfo.Decimals,
+					*block.Amount, block.Timestamp,
+					time.Unix(block.Timestamp, 0).String())
+			} else if block.BlockType == ledger.BlockTypeReceive {
+				fmt.Printf("[R]%s,%s,%s,%s,%s,%d,%s,%d,%s\n",
+					block.Height, block.FromAddress, block.Address,
+					block.TokenInfo.TokenSymbol, block.TokenInfo.TokenId.String(), block.TokenInfo.Decimals,
+					*block.Amount, block.Timestamp,
+					time.Unix(block.Timestamp, 0).String())
+			}
 		}
 
 		if index <= start {
