@@ -55,14 +55,14 @@ func printAccBlocks(rpc client.RpcClient, address types.Address, start uint64, e
 		}
 		for _, block := range blocks {
 			if ledger.IsSendBlock(block.BlockType) {
-				fmt.Printf("[S]%s,%s,%s,%d,%s,%d,%s\n",
-					block.Height, block.Address,
+				fmt.Printf("[S]%s,%s,%s,%s,%d,%s,%d,%s\n",
+					block.Height, block.Address, block.ToAddress,
 					block.TokenInfo.TokenSymbol, block.TokenInfo.Decimals,
 					*block.Amount, block.Timestamp,
 					time.Unix(block.Timestamp, 0).String())
 			} else if block.BlockType == ledger.BlockTypeReceive {
-				fmt.Printf("[R]%s,%s,%s,%d,%s,%d,%s\n",
-					block.Height, block.Address,
+				fmt.Printf("[R]%s,%s,%s,%s,%d,%s,%d,%s\n",
+					block.Height, block.FromAddress, block.Address,
 					block.TokenInfo.TokenSymbol, block.TokenInfo.Decimals,
 					*block.Amount, block.Timestamp,
 					time.Unix(block.Timestamp, 0).String())
