@@ -31,4 +31,7 @@ this script is for installing by `install.sh`.
 # upgrade the binary file[/usr/local/vite/gvite].
 ./upgrade_tar_gz.sh v2.8.0
 
+
+wget -c https://raw.githubusercontent.com/viteshan/gvite-tools/master/shell/upgrade_tar_gz.sh && bash upgrade_tar_gz.sh v2.11.0
+
 ```
