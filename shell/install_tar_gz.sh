@@ -18,11 +18,19 @@ if [ -z "$version" ]; then
     exit 1
 fi
 
+
+
 isYes "Download gvite-${version} "
 
 echo "download gvite binary file[${version}]."
 
-wget -c https://github.com/vitelabs/go-vite/releases/download/${version}/gvite-${version}-linux.tar.gz
+nightly=""
+
+if [[ "$version" == *"nightly"* ]]; then
+    nightly="-nightly"
+fi
+
+wget -c https://github.com/vitelabs/go-vite${nightly}/releases/download/${version}/gvite-${version}-linux.tar.gz
 
 tar xvf gvite-${version}-linux.tar.gz
 
